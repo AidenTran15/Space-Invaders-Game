@@ -38,6 +38,7 @@ class Ship:
     def draw(self, window):
         window.blit(self.ship_img, (self.x, self.y))
 
+    # Get width and height of the ship for the boader
     def get_width(self):
         return self.ship_img.get_width()
 
@@ -80,7 +81,7 @@ def main():
 
     def redraw_window():
         WIN.blit(BG, (0,0))
-        # draw
+        # render live and level on the screen
         lives_label = main_font.render(f"Lives: {lives}", 1, (255,255,255))
         level_label = main_font.render(f"Level: {level}", 1, (255,255,255))
 
@@ -99,6 +100,7 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
+        # Ship's moving key
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] and player.x - player_vel > 0: # left
             player.x -= player_vel
