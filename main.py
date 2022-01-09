@@ -64,6 +64,9 @@ class Enemy(Ship):
         self.ship_img, self.laser_img = self.COLOR_MAP[color]
         self.mask = pygame.mask.from_surface(self.ship_img)
 
+    def move(self, vel):
+        self.y += vel
+
 def main():
     run = True
     FPS = 60
