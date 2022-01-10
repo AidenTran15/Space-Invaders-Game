@@ -25,7 +25,25 @@ YELLOW_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_yellow.png"
 # Background
 BG = RED_LASER = pygame.transform.scale(pygame.image.load(os.path.join("assets", "background-black.png")), (WIDTH, HEIGHT))
 
+class Laser:
+    def __init__(self, x, y, img):
+        self.x = x
+        self.y = y
+        self.img = img
+        self.mask = pygame.mask.from_surface(self.img)
+
+    def draw(self, vel):
+        self.y += vel
+
+    def off_screen(self, height):
+        return self.y <= height and self.y >= 0
+
+    def collision(self, obj):
+        return collide(self, obj)
+
 class Ship:
+    COOLDOWN = 30
+
     def __init__(self, x, y, health=100):
         self.x = x
         self.y = y
@@ -37,6 +55,22 @@ class Ship:
 
     def draw(self, window):
         window.blit(self.ship_img, (self.x, self.y))
+        for laser in self.lasers:
+            laser.draw(window)
+
+    #handle counting the cooldown
+    def cooldown(self):
+        if self.cool_down_counter >= self.COOLDOWN:
+            self.cool_down_counter = 0
+        elif self.cool_down_counter > 0:
+            self.cool_down_counter += 1
+
+
+    def shoot(self):
+        if self.cool_down_counter == 0:
+            laser = Laser(x, y, self.laser_img)
+            self.lasers.append(laser)
+            self.cool_down_counter = 1
 
     # Get width and height of the ship for the boader
     def get_width(self):
@@ -67,6 +101,11 @@ class Enemy(Ship):
 
     def move(self, vel):
         self.y += vel
+
+def collide(obj1, obj2):
+    offset_x = obj2.x - obj1.x
+    offset_y = obj2.y - obj1.y
+    return obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None
 
 def main():
     run = True
@@ -143,6 +182,8 @@ def main():
             player.y -= player_vel
         if keys[pygame.K_s] and player.y + player_vel + player.get_height() < HEIGHT: # down
             player.y += player_vel
+        if keys[pygame.K_SPACE]:
+            player.shoot()
 
         # Enemies randomly move down from the top
         for enemy in enemies:
