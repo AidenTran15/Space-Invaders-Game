@@ -125,8 +125,13 @@ def main():
         if keys[pygame.K_s] and player.y + player_vel + player.get_height() < HEIGHT: # down
             player.y += player_vel
 
+        # Enemies randomly move down from the top
         for enemy in enemies:
             enemy.move(enemy_vel)
+            # when enemies go down to the end, lives decrease by 1 and enemies remove
+            if enemy.y + enemy.get_height() > HEIGHT:
+                lives -= 1
+                enemies.remove(enemy) 
 
         redraw_window()
 main()
