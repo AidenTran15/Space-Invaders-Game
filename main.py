@@ -70,7 +70,7 @@ class Ship:
 
     def shoot(self):
         if self.cool_down_counter == 0:
-            laser = Laser(self.x, self.y, self.laser_img)
+            laser = Laser(self.x -10, self.y, self.laser_img)
             self.lasers.append(laser)
             self.cool_down_counter = 1
 
@@ -101,6 +101,8 @@ class Player(Ship):
                         objs.remove(obj)
                         self.lasers.remove(laser)
 
+    
+
 class Enemy(Ship):
     COLOR_MAP = {
                 "red": (RED_SPACE_SHIP, RED_LASER),
@@ -115,6 +117,12 @@ class Enemy(Ship):
 
     def move(self, vel):
         self.y += vel
+
+    def shoot(self):
+        if self.cool_down_counter == 0:
+            laser = Laser(self.x -10, self.y, self.laser_img)
+            self.lasers.append(laser)
+            self.cool_down_counter = 1
 
     def move_lasers(self, vel, obj):
         self.cooldown()
@@ -215,6 +223,14 @@ def main():
         for enemy in enemies:
             enemy.move(enemy_vel)
             enemy.move_lasers(laser_vel, player)
+
+            if random.randrange(0, 2*60) == 1:
+                enemy.shoot()
+
+            if collide(enemy, player):
+                player.health -= 10
+                enemies.remove(enemy)
+
             # when enemies go down to the end, lives decrease by 1 and enemies remove
             if enemy.y + enemy.get_height() > HEIGHT:
                 lives -= 1
